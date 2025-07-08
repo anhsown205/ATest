@@ -37,6 +37,9 @@ public class User {
     private String password;
     private String nationalId;
     private LocalDate dateOfBirth;
+    private String phone; // <-- THÊM THUỘC TÍNH NÀY
+    private String position; // <-- THÊM THUỘC TÍNH NÀY
+    private boolean locked = false; // <-- THÊM THUỘC TÍNH NÀY
 
     @Enumerated(EnumType.STRING)
     private Role role;

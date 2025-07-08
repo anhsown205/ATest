@@ -3,6 +3,7 @@ package com.blood_donation.blood_donation.service;
 import com.blood_donation.blood_donation.entity.User;
 import com.blood_donation.blood_donation.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,6 +28,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // Tìm user trong DB
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));
+
+        if (user.isLocked()) {
+            throw new LockedException("Tài khoản này đã bị khóa.");
+        }
 
         // Trả về một đối tượng UserDetails mà Spring Security có thể hiểu
         return new org.springframework.security.core.userdetails.User(

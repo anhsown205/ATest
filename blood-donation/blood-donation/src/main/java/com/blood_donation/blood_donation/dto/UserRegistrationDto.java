@@ -16,4 +16,5 @@ public class UserRegistrationDto {
     private String confirmPassword;
     @DateTimeFormat(pattern = "yyyy-MM-dd") 
     private LocalDate dateOfBirth;
+    private String phone;
 }

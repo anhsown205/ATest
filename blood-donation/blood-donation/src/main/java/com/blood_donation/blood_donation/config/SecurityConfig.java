@@ -5,6 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+
 
 import com.blood_donation.blood_donation.service.UserDetailsServiceImpl;
 @Configuration
@@ -19,7 +23,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Public paths
-                        .requestMatchers("/", "/home", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        .requestMatchers("/", "/home", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error","/forgot-password").permitAll()
                         .requestMatchers("/blogs/**", "/blood-info").permitAll()
                         // Admin specific paths
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
@@ -51,7 +55,24 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
+                )
+                // === THÊM CẤU HÌNH QUẢN LÝ SESSION ===
+                        .sessionManagement(session -> session
+                        .maximumSessions(1) // Mỗi tài khoản chỉ được đăng nhập ở 1 nơi
+                        .sessionRegistry(sessionRegistry())
+                        // THÊM DÒNG NÀY: Khi session bị hết hạn (do bị khóa), chuyển hướng về đây
+                        .expiredUrl("/login?account_locked=true") 
                 );
-        return http.build();
-    }
+
+                return http.build();
+        }
+        @Bean
+        public SessionRegistry sessionRegistry() {
+                return new SessionRegistryImpl();
+        }
+
+        @Bean
+        public HttpSessionEventPublisher httpSessionEventPublisher() {
+                return new HttpSessionEventPublisher();
+        }
 }

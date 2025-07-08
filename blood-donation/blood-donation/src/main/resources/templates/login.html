@@ -19,24 +19,39 @@
 
                     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
-                    <div th:if="${param.error}" class="alert alert-danger">Tên đăng nhập hoặc mật khẩu không đúng.</div>
-                    
+                    <div th:if="${param.account_locked}" class="alert alert-danger">
+                        Tài khoản của bạn đã bị khóa và phiên đăng nhập đã kết thúc. Vui lòng liên hệ quản trị viên.
+                    </div>
+
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        <div th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null and #strings.contains(session.SPRING_SECURITY_LAST_EXCEPTION.message, 'Tài khoản này đã bị khóa')}"
+                             th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}">
+                        </div>
+                        <div th:unless="${session.SPRING_SECURITY_LAST_EXCEPTION != null and #strings.contains(session.SPRING_SECURITY_LAST_EXCEPTION.message, 'Tài khoản này đã bị khóa')}">
+                             Tên đăng nhập hoặc mật khẩu không đúng.
+                        </div>
+                    </div>
+
                     <div th:if="${param.logout}" class="alert alert-info">Bạn đã đăng xuất thành công.</div>
 
                     <form th:action="@{/perform_login}" method="post">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Tên đăng nhập</p>
+                            <label for="username" class="form-label">Tên đăng nhập</label>
                             <input type="text" id="username" name="username" class="form-control" required autofocus>
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Mật khẩu</p>
+                            <label for="password" class="form-label">Mật khẩu</label>
                             <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <a th:href="@{/forgot-password}">Quên mật khẩu?</a>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-danger btn-lg">Đăng nhập</button>
                         </div>
                     </form>
-                     <div class="text-center mt-3">
+
+                    <div class="text-center mt-3">
                         <p>Chưa có tài khoản? <a th:href="@{/register}">Đăng ký ngay</a></p>
                         <a th:href="@{/}">Quay về trang chủ</a>
                     </div>

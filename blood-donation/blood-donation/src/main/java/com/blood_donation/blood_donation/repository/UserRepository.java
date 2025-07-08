@@ -3,6 +3,8 @@ package com.blood_donation.blood_donation.repository;
 import com.blood_donation.blood_donation.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -19,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
     // Dùng để kiểm tra đăng nhập và cho Spring Security
     Optional<User> findByEmail(String username);
+
+    Page<User> findByRole(User.Role role, Pageable pageable);
 }
