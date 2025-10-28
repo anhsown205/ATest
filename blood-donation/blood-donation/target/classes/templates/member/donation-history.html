@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử hiến máu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" style="color: #c81e1e;" th:href="@{/}">HỆ THỐNG HIẾN MÁU</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="btn btn-primary me-2" th:href="@{/dashboard}">Bảng điều khiển</a></li>
+                <li class="nav-item"><form th:action="@{/perform_logout}" method="post" class="d-inline"><button class="btn btn-outline-secondary" type="submit">Đăng xuất</button></form></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Lịch sử đăng ký hiến máu</h1>
+        <a th:href="@{/donations/register}" class="btn btn-danger">Đăng ký hiến máu mới</a>
+    </div>
+    <p class="text-muted">Theo dõi tất cả các lần bạn đăng ký hiến máu và trạng thái của chúng tại đây.</p>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Ngày đăng ký</th>
+                        <th>Nhóm máu</th>
+                        <th>Ngày hẹn hiến</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày hiến tiếp theo</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="reg : ${donationHistory}">
+                        <td th:text="${#temporals.format(reg.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${reg.bloodType}"></td>
+                        <td th:text="${#temporals.format(reg.availableDate, 'dd-MM-yyyy')}"></td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${reg.status.name() == 'PENDING' ? 'bg-warning text-dark' :
+                                                   reg.status.name() == 'APPROVED' ? 'bg-primary' :
+                                                   reg.status.name() == 'CONTACTED' ? 'bg-info text-dark' :
+                                                   reg.status.name() == 'COMPLETED' ? 'bg-success' :
+                                                   reg.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'}"
+                                  th:text="${reg.status.name()}">
+                            </span>
+                        </td>
+                        <td th:text="${reg.nextEligibleDate != null ? #temporals.format(reg.nextEligibleDate, 'dd-MM-yyyy') : 'N/A'}"></td>
+                        <td>
+                            <a th:if="${reg.status.name() == 'PENDING' or reg.status.name() == 'APPROVED'}"
+                               th:href="@{/donations/edit/{id}(id=${reg.id})}"
+                               class="btn btn-sm btn-warning">Chỉnh sửa</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(donationHistory)}">
+                        <td colspan="6" class="text-center text-muted py-4">Bạn chưa có lịch sử đăng ký nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
